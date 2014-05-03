@@ -91,13 +91,13 @@ func (s *SemVer) verify() error {
 
 // takeR will take all characters in a string from the right side of the subject
 // until sep is encountered. The subject will be pruned in-place of both sep and
-// the taken string.
+// the taken string. If sep is not present in subj, then "" is returned.
 func takeR(subj *string, sep string) string {
-	parts := strings.Split(*subj, sep)
-	l := len(parts)
-	if l == 1 {
+	if !strings.Contains(*subj, sep) {
 		return ""
 	}
+	parts := strings.Split(*subj, sep)
+	l := len(parts)
 	*subj = strings.Join(parts[0:l-1], sep)
 	return parts[l-1]
 }
