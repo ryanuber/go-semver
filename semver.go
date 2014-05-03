@@ -97,7 +97,7 @@ func takeR(subj *string, sep string) string {
 		return ""
 	}
 	parts := strings.Split(*subj, sep)
-	l := len(parts)
-	*subj = strings.Join(parts[0:l-1], sep)
-	return parts[l-1]
+	last := len(parts) - 1
+	*subj = strings.Join(parts[0:last], sep)
+	return parts[last]
 }
