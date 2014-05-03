@@ -44,22 +44,25 @@ func (v1 *SemVer) equalTo(v2 *SemVer) bool {
 
 // twiddleCompare will perform a pessemistic version comparison (~> comparator)
 // to allow implicit semantic versioning trust between versioned artifacts.
-func twiddleCompare(v1, v2 []string) bool {
-	last := len(v2)
-	for i := len(v2) - 1; i >= 0; i-- {
-		if v2[i] == "" || v2[i] == "0" {
+func (v1 *SemVer) twiddleCompare(v2 *SemVer) bool {
+	partsA := v1.parts()
+	partsB := v2.parts()
+
+	last := len(partsB)
+	for i := last - 1; i >= 0; i-- {
+		if partsB[i] == "" || partsB[i] == "0" {
 			last = i
 		}
-		if v2[i] == "" {
+		if partsB[i] == "" {
 			continue
 		}
 		break
 	}
 
-	if vcomp(v1[:last-1], v2[:last-1]) != 0 {
+	if vcomp(partsA[:last-1], partsB[:last-1]) != 0 {
 		return false
 	}
-	if vcomp(v1[last-1:], v2[last-1:]) < 0 {
+	if vcomp(partsA[last-1:], partsB[last-1:]) < 0 {
 		return false
 	}
 	return true
@@ -80,7 +83,7 @@ func (v1 *SemVer) Compare(comparator string, v2 *SemVer) bool {
 	case "<=":
 		return v1.lessThan(v2) || v1.equalTo(v2)
 	case "~>":
-		return twiddleCompare(v1.parts(), v2.parts())
+		return v1.twiddleCompare(v2)
 	default:
 		return false
 	}
