@@ -45,6 +45,10 @@ func (v1 *SemVer) equalTo(v2 *SemVer) bool {
 // twiddleCompare will perform a pessemistic version comparison (~> comparator)
 // to allow implicit semantic versioning trust between versioned artifacts.
 func (v1 *SemVer) twiddleCompare(v2 *SemVer) bool {
+	if v1.String() == v2.String() {
+		return 0
+	}
+
 	partsA := v1.parts()
 	partsB := v2.parts()
 
