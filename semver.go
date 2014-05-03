@@ -43,20 +43,30 @@ func (s *SemVer) parts() []string {
 	return []string{s.Major, s.Minor, s.Patch, s.PreRel, s.Build}
 }
 
-// New will create a new semantic versioning object from a flat
-// string and populate all struct fields.
-func New(vstr string) (*SemVer, error) {
+// New creates a new semver object from individual version components.
+func New(major, minor, patch, preRel, build string) (*SemVer, error) {
 	s := &SemVer{
-		Build:  takeR(&vstr, "+"),
-		PreRel: takeR(&vstr, "-"),
-		Patch:  takeR(&vstr, "."),
-		Minor:  takeR(&vstr, "."),
-		Major:  vstr,
+		Major:  major,
+		Minor:  minor,
+		Patch:  patch,
+		PreRel: preRel,
+		Build:  build,
 	}
 	if err := s.verify(); err != nil {
 		return nil, err
 	}
 	return s, nil
+}
+
+// New will create a new semantic versioning object from a flat
+// string and populate all struct fields.
+func NewFromString(vstr string) (*SemVer, error) {
+	build := takeR(&vstr, "+")
+	preRe := takeR(&vstr, "-")
+	patch := takeR(&vstr, ".")
+	minor := takeR(&vstr, ".")
+	major := vstr
+	return New(major, minor, patch, preRe, build)
 }
 
 // verify is used to ensure that a semver object complies with the format
