@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+var (
+	baseRe    *regexp.Regexp
+	extReList []*regexp.Regexp
+)
+
 // Version represents a SemVer 2.0.0 version and implements some high-level
 // methods to manage multiple versions.
 type SemVer struct {
@@ -16,9 +21,17 @@ type SemVer struct {
 	Build  string // Optional build metadata
 }
 
+func init() {
+	baseRe = regexp.MustCompile("^(([1-9][0-9]+)|[0-9])?$")
+	extReList = []*regexp.Regexp{
+		regexp.MustCompile("^([1-9a-zA-Z]([0-9a-zA-Z-]+)?)?$"),
+		regexp.MustCompile("^([1-9]([0-9]+)?)?$"),
+	}
+}
+
 // String will return a flat string representing the semantic version
 func (s *SemVer) String() string {
-	res := fmt.Sprintf("%s.%s.%s", s.Major, s.Minor, s.Patch)
+	res := s.BaseString()
 	if s.PreRel != "" {
 		res = fmt.Sprintf("%s-%s", res, s.PreRel)
 	}
@@ -26,6 +39,12 @@ func (s *SemVer) String() string {
 		res = fmt.Sprintf("%s+%s", res, s.Build)
 	}
 	return res
+}
+
+// BaseString will return the base version number (sans pre-release and build)
+// as a formatted string.
+func (s *SemVer) BaseString() string {
+	return fmt.Sprintf("%s.%s.%s", s.Major, s.Minor, s.Patch)
 }
 
 // parts will return all version components as a slice of strings.
@@ -51,42 +70,60 @@ func New(major, minor, patch, preRel, build string) (*SemVer, error) {
 // New will create a new semantic versioning object from a flat
 // string and populate all struct fields.
 func NewFromString(vstr string) (*SemVer, error) {
-	build := takeR(&vstr, "+")
-	preRe := takeR(&vstr, "-")
-	patch := takeR(&vstr, ".")
-	minor := takeR(&vstr, ".")
-	major := vstr
-	return New(major, minor, patch, preRe, build)
+	var major, minor, patch, pre, build string
+
+	parts := strings.SplitN(vstr, ".", 3)
+	if len(parts) < 3 {
+		return nil, fmt.Errorf("semver: version too short: %s", vstr)
+	}
+	major, minor, patch = parts[0], parts[1], parts[2]
+
+	parts = strings.SplitN(patch, "-", 2)
+	patch = parts[0]
+	if len(parts) > 1 {
+		pre = parts[1]
+	}
+
+	parts = strings.SplitN(pre, "+", 2)
+	pre = parts[0]
+	if len(parts) > 1 {
+		build = parts[1]
+	}
+
+	return New(major, minor, patch, pre, build)
+}
+
+// matchAny simplifies iterating over a slice of regexp patterns and testing if
+// any of them match a subject text.
+func matchAny(patterns []*regexp.Regexp, subj string) bool {
+	for _, pattern := range patterns {
+		if pattern.MatchString(subj) {
+			return true
+		}
+	}
+	return false
 }
 
 // verify is used to ensure that a semver object complies with the format
 // defined by semver.org.
 func (s *SemVer) verify() error {
-	baseRe, err := regexp.Compile("^[0-9]+$")
-	extRe, err := regexp.Compile("^([0-9a-zA-Z-]+)?$")
-	if err != nil {
-		return err
+	if !(baseRe.MatchString(s.Major) &&
+		baseRe.MatchString(s.Minor) &&
+		baseRe.MatchString(s.Patch)) {
+		return fmt.Errorf("semver: invalid base version: %s", s.BaseString())
 	}
 
-	if !(baseRe.MatchString(s.Major) && baseRe.MatchString(s.Minor) &&
-		baseRe.MatchString(s.Patch) && extRe.MatchString(s.PreRel) &&
-		extRe.MatchString(s.Build)) {
+	for _, subj := range strings.Split(s.PreRel, ".") {
+		if !matchAny(extReList, subj) {
+			return fmt.Errorf("semver: invalid pre-release tag: %s", s.PreRel)
+		}
+	}
 
-		return fmt.Errorf("semver: invalid version: %s", s.String())
+	for _, subj := range strings.Split(s.Build, ".") {
+		if !matchAny(extReList, subj) {
+			return fmt.Errorf("semver: invalid build metadata: %s", s.Build)
+		}
 	}
 
 	return nil
-}
-
-// takeR will take all characters in a string from the right side of the subject
-// until sep is encountered. The subject will be pruned in-place of both sep and
-// the taken string. If sep is not present in subj, then "" is returned.
-func takeR(subj *string, sep string) string {
-	if !strings.Contains(*subj, sep) {
-		return ""
-	}
-	parts := strings.Split(*subj, sep)
-	last := len(parts) - 1
-	*subj = strings.Join(parts[0:last], sep)
-	return parts[last]
 }
