@@ -68,10 +68,8 @@ func (s *SemVer) verify() error {
 		return err
 	}
 
-	if !(baseRe.MatchString(s.Major) &&
-		baseRe.MatchString(s.Minor) &&
-		baseRe.MatchString(s.Patch) &&
-		extRe.MatchString(s.PreRel) &&
+	if !(baseRe.MatchString(s.Major) && baseRe.MatchString(s.Minor) &&
+		baseRe.MatchString(s.Patch) && extRe.MatchString(s.PreRel) &&
 		extRe.MatchString(s.Build)) {
 
 		return fmt.Errorf("semver: invalid version: %s", s.String())
