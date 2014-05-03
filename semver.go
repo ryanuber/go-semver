@@ -78,16 +78,16 @@ func NewFromString(vstr string) (*SemVer, error) {
 	}
 	major, minor, patch = parts[0], parts[1], parts[2]
 
+	parts = strings.SplitN(patch, "+", 2)
+	patch = parts[0]
+	if len(parts) > 1 {
+		build = parts[1]
+	}
+
 	parts = strings.SplitN(patch, "-", 2)
 	patch = parts[0]
 	if len(parts) > 1 {
 		pre = parts[1]
-	}
-
-	parts = strings.SplitN(pre, "+", 2)
-	pre = parts[0]
-	if len(parts) > 1 {
-		build = parts[1]
 	}
 
 	return New(major, minor, patch, pre, build)
