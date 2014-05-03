@@ -70,10 +70,10 @@ func (s *SemVer) verify() error {
 
 	for i, part := range s.parts() {
 		if i < 3 && !baseRe.MatchString(part) {
-			return fmt.Errorf("semver: invalid base number: %s", part)
+			return fmt.Errorf("semver: invalid version: %s", s.String())
 		}
 		if i >= 3 && !patchRe.MatchString(part) {
-			return fmt.Errorf("semver: invalid patch extension: %s", part)
+			return fmt.Errorf("semver: invalid version: %s", s.String())
 		}
 	}
 	return nil
