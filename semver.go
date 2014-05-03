@@ -63,19 +63,20 @@ func New(vstr string) (*SemVer, error) {
 // defined by semver.org.
 func (s *SemVer) verify() error {
 	baseRe, err := regexp.Compile("^[0-9]+$")
-	patchRe, err := regexp.Compile("^([0-9a-zA-Z-]+)?$")
+	extRe, err := regexp.Compile("^([0-9a-zA-Z-]+)?$")
 	if err != nil {
 		return err
 	}
 
-	for i, part := range s.parts() {
-		if i < 3 && !baseRe.MatchString(part) {
-			return fmt.Errorf("semver: invalid version: %s", s.String())
-		}
-		if i >= 3 && !patchRe.MatchString(part) {
-			return fmt.Errorf("semver: invalid version: %s", s.String())
-		}
+	if !(baseRe.MatchString(s.Major) &&
+		baseRe.MatchString(s.Minor) &&
+		baseRe.MatchString(s.Patch) &&
+		extRe.MatchString(s.PreRel) &&
+		extRe.MatchString(s.Build)) {
+
+		return fmt.Errorf("semver: invalid version: %s", s.String())
 	}
+
 	return nil
 }
 
