@@ -31,7 +31,7 @@ func init() {
 
 // String will return a flat string representing the semantic version
 func (s *SemVer) String() string {
-	res := s.BaseString()
+	res := fmt.Sprintf("%s.%s.%s", s.Major, s.Minor, s.Patch)
 	if s.PreRel != "" {
 		res = fmt.Sprintf("%s-%s", res, s.PreRel)
 	}
@@ -39,12 +39,6 @@ func (s *SemVer) String() string {
 		res = fmt.Sprintf("%s+%s", res, s.Build)
 	}
 	return res
-}
-
-// BaseString will return the base version number (sans pre-release and build)
-// as a formatted string.
-func (s *SemVer) BaseString() string {
-	return fmt.Sprintf("%s.%s.%s", s.Major, s.Minor, s.Patch)
 }
 
 // parts will return all version components as a slice of strings.
@@ -107,10 +101,16 @@ func matchAny(patterns []*regexp.Regexp, subj string) bool {
 // verify is used to ensure that a semver object complies with the format
 // defined by semver.org.
 func (s *SemVer) verify() error {
-	if !(baseRe.MatchString(s.Major) &&
-		baseRe.MatchString(s.Minor) &&
-		baseRe.MatchString(s.Patch)) {
-		return fmt.Errorf("semver: invalid base version: %s", s.BaseString())
+	if !baseRe.MatchString(s.Major) {
+		return fmt.Errorf("semver: invalid major version: %s", s.Major)
+	}
+
+	if !baseRe.MatchString(s.Minor) {
+		return fmt.Errorf("semver: invalid minor version: %s", s.Minor)
+	}
+
+	if !baseRe.MatchString(s.Patch) {
+		return fmt.Errorf("semver: invalid patch version: %s", s.Patch)
 	}
 
 	for _, subj := range strings.Split(s.PreRel, ".") {
