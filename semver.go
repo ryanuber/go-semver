@@ -101,11 +101,14 @@ func takeR(subj *string, sep string) string {
 	return parts[l-1]
 }
 
-// Compare is used to in dependency resolution to compare two versions of
+// compare is used to in dependency resolution to compare two versions of
 // software. The return value is an integer, either -1, 0, or 1. The result may
 // be compared against '0' with standard operators to determine greater than,
 // less than, etc.
-func (v1 *SemVer) Compare(v2 *SemVer) int {
+func (v1 *SemVer) compare(v2 *SemVer) int {
+	if v1.String() == v2.String() {
+		return 0
+	}
 	return vcomp(v1.parts(), v2.parts())
 }
 
@@ -125,17 +128,17 @@ func vcomp(v1, v2 []string) int {
 	}
 }
 
-// GreaterThan determines if one version is larger than another
-func (v1 *SemVer) GreaterThan(v2 *SemVer) bool {
-	return v1.Compare(v2) > 0
+// greaterThan determines if one version is larger than another
+func (v1 *SemVer) greaterThan(v2 *SemVer) bool {
+	return v1.compare(v2) > 0
 }
 
-// LessThan is the inverse of the Greater than function
-func (v1 *SemVer) LessThan(v2 *SemVer) bool {
-	return v1.Compare(v2) < 0
+// lessThan is the inverse of the Greater than function
+func (v1 *SemVer) lessThan(v2 *SemVer) bool {
+	return v1.compare(v2) < 0
 }
 
 // EqualTo determines if two versions are equivalent.
-func (v1 *SemVer) EqualTo(v2 *SemVer) bool {
-	return v1.Compare(v2) == 0
+func (v1 *SemVer) equalTo(v2 *SemVer) bool {
+	return v1.compare(v2) == 0
 }
