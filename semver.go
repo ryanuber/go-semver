@@ -86,6 +86,9 @@ func (s *SemVer) verify() error {
 func takeR(subj *string, sep string) string {
 	parts := strings.Split(*subj, sep)
 	l := len(parts)
+	if l == 1 {
+		return ""
+	}
 	*subj = strings.Join(parts[0:l-1], sep)
 	return parts[l-1]
 }
