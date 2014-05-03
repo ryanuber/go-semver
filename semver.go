@@ -9,22 +9,11 @@ import (
 // Version represents a SemVer 2.0.0 version and implements some high-level
 // methods to manage multiple versions.
 type SemVer struct {
-	// The major version. This is an integer that increments when a backward-
-	// incompatible change is made to a project's API.
-	Major string
-
-	// The minor version. Used to indicate feature addition.
-	Minor string
-
-	// The patch number. This is typically used to indicate bug fixes that
-	// enhance existing functionality without changing or adding any API's.
-	Patch string
-
-	// The (optional) pre-release version from point 9 of semver 2.0.
-	PreRel string
-
-	// A string of optional build metadata per point 10 of semver 2.0.
-	Build string
+	Major  string // Backward-incompatible changes
+	Minor  string // New functionality
+	Patch  string // Bug fixes
+	PreRel string // Optional pre-release tag
+	Build  string // Optional build metadata
 }
 
 // String will return a flat string representing the semantic version
