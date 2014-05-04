@@ -8,7 +8,9 @@ func (v1 *SemVer) compare(v2 *SemVer) int {
 	if v1.String() == v2.String() {
 		return 0
 	}
-	return vcomp(v1.parts(), v2.parts())
+	partsA := v1.parts()
+	partsB := v2.parts()
+	return vcomp(partsA[:len(partsA)-1], partsB[:len(partsB)-1])
 }
 
 // vcomp is a recursive function which will compare two slices of version
