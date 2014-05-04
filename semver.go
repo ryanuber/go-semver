@@ -121,16 +121,12 @@ func (s *SemVer) verify() error {
 		return fmt.Errorf("semver: invalid patch version: %s", s.Patch)
 	}
 
-	if s.PreRel != "" {
-		if !matchAny(preReList, s.PreRel) {
-			return fmt.Errorf("semver: invalid pre-release: %s", s.PreRel)
-		}
+	if s.PreRel != "" && !matchAny(preReList, s.PreRel) {
+		return fmt.Errorf("semver: invalid pre-release: %s", s.PreRel)
 	}
 
-	if s.Build != "" {
-		if !matchAny(buildReList, s.Build) {
-			return fmt.Errorf("semver: invalid build metadata: %s", s.Build)
-		}
+	if s.Build != "" && !matchAny(buildReList, s.Build) {
+		return fmt.Errorf("semver: invalid build metadata: %s", s.Build)
 	}
 
 	return nil
