@@ -1,5 +1,4 @@
-go-semver
-=========
+# go-semver [![Build Status](https://travis-ci.org/ryanuber/go-semver.svg)](https://travis-ci.org/ryanuber/go-semver)
 
 [Semantic Versioning](http://semver.org) implementation in go.
 
