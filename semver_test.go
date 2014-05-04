@@ -2,6 +2,7 @@ package semver
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -129,5 +130,36 @@ func TestNewFromString_BuildWithPoints(t *testing.T) {
 
 	if !reflect.DeepEqual(ver, expected) {
 		t.Fatalf("bad: %#v", ver)
+	}
+}
+
+func TestBadBaseVersion(t *testing.T) {
+	_, err := NewFromString("1a.2.3")
+	if err == nil || !strings.Contains(err.Error(), "invalid major") {
+		t.Fatalf("Expected major version error")
+	}
+
+	_, err = NewFromString("1.2a.3")
+	if err == nil || !strings.Contains(err.Error(), "invalid minor") {
+		t.Fatalf("Expected minor version error")
+	}
+
+	_, err = NewFromString("1.2.3a")
+	if err == nil || !strings.Contains(err.Error(), "invalid patch") {
+		t.Fatalf("Expected patch version error")
+	}
+}
+
+func TestBadPreRelease(t *testing.T) {
+	_, err := NewFromString("1.2.3-1_a")
+	if err == nil || !strings.Contains(err.Error(), "invalid pre-release") {
+		t.Fatalf("Expected pre-release error")
+	}
+}
+
+func TestBadBuildMetadata(t *testing.T) {
+	_, err := NewFromString("1.2.3+1_a")
+	if err == nil || !strings.Contains(err.Error(), "invalid build") {
+		t.Fatalf("Expected build metadata error")
 	}
 }
