@@ -38,6 +38,13 @@ func TestNewFromString(t *testing.T) {
 	}
 }
 
+func TestNewFromString_TooShort(t *testing.T) {
+	_, err := NewFromString("1.2")
+	if err == nil || !strings.Contains(err.Error(), "too short") {
+		t.Fatalf("Expected version length error")
+	}
+}
+
 func TestNewFromString_PrereleaseOnly(t *testing.T) {
 	ver, err := NewFromString("1.2.3-4.0a")
 	if err != nil {
