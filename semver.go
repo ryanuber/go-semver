@@ -25,7 +25,7 @@ func init() {
 	baseRe = regexp.MustCompile("^(([1-9][0-9]+)|[0-9])?$")
 	extReList = []*regexp.Regexp{
 		regexp.MustCompile("^([1-9a-zA-Z]([0-9a-zA-Z-]+)?)?$"),
-		regexp.MustCompile("^([1-9]([0-9]+)?)?$"),
+		baseRe,
 	}
 }
 
