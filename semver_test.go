@@ -19,8 +19,26 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewFromString(t *testing.T) {
-	// All components present
-	ver, err := NewFromString("1.2.3-4.0a+5.1b")
+	ver, err := NewFromString("1.2.3")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+
+	expected := &SemVer{
+		Major:  "1",
+		Minor:  "2",
+		Patch:  "3",
+		PreRel: "",
+		Build:  "",
+	}
+
+	if !reflect.DeepEqual(ver, expected) {
+		t.Fatalf("bad: %#v", ver)
+	}
+}
+
+func TestNewFromString_PrereleaseOnly(t *testing.T) {
+	ver, err := NewFromString("1.2.3-4.0a")
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
@@ -30,20 +48,21 @@ func TestNewFromString(t *testing.T) {
 		Minor:  "2",
 		Patch:  "3",
 		PreRel: "4.0a",
-		Build:  "5.1b",
+		Build:  "",
 	}
 
 	if !reflect.DeepEqual(ver, expected) {
 		t.Fatalf("bad: %#v", ver)
 	}
+}
 
-	// Build number present, pre-release absent
-	ver, err = NewFromString("1.2.3+4.0a")
+func TestNewFromString_BuildOnly(t *testing.T) {
+	ver, err := NewFromString("1.2.3+4.0a")
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
 
-	expected = &SemVer{
+	expected := &SemVer{
 		Major:  "1",
 		Minor:  "2",
 		Patch:  "3",
@@ -54,19 +73,58 @@ func TestNewFromString(t *testing.T) {
 	if !reflect.DeepEqual(ver, expected) {
 		t.Fatalf("bad: %#v", ver)
 	}
+}
 
-	// Pre-release present, build number absent
-	ver, err = NewFromString("1.2.3-4.0a")
+func TestNewFromString_PrereleaseAndBuild(t *testing.T) {
+	ver, err := NewFromString("1.2.3-alpha5+4.0a")
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
 
-	expected = &SemVer{
+	expected := &SemVer{
 		Major:  "1",
 		Minor:  "2",
 		Patch:  "3",
-		PreRel: "4.0a",
+		PreRel: "alpha5",
+		Build:  "4.0a",
+	}
+
+	if !reflect.DeepEqual(ver, expected) {
+		t.Fatalf("bad: %#v", ver)
+	}
+}
+
+func TestNewFromString_PrerelaseWithPoints(t *testing.T) {
+	ver, err := NewFromString("1.2.3-alpha5.3.1")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+
+	expected := &SemVer{
+		Major:  "1",
+		Minor:  "2",
+		Patch:  "3",
+		PreRel: "alpha5.3.1",
 		Build:  "",
+	}
+
+	if !reflect.DeepEqual(ver, expected) {
+		t.Fatalf("bad: %#v", ver)
+	}
+}
+
+func TestNewFromString_BuildWithPoints(t *testing.T) {
+	ver, err := NewFromString("1.2.3+5.3.1a")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+
+	expected := &SemVer{
+		Major:  "1",
+		Minor:  "2",
+		Patch:  "3",
+		PreRel: "",
+		Build:  "5.3.1a",
 	}
 
 	if !reflect.DeepEqual(ver, expected) {
