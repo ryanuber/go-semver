@@ -47,6 +47,11 @@ func (s *SemVer) String() string {
 	return res
 }
 
+// BaseString returns the normal version number (sans pre-release/build)
+func (s *SemVer) BaseString() string {
+	return fmt.Sprintf("%s.%s.%s", s.Major, s.Minor, s.Patch)
+}
+
 // parts will return all version components as a slice of strings.
 func (s *SemVer) parts() []string {
 	return []string{s.Major, s.Minor, s.Patch, s.PreRel, s.Build}

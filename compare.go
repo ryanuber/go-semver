@@ -5,9 +5,21 @@ package semver
 // be compared against '0' with standard operators to determine greater than,
 // less than, etc.
 func (v1 *SemVer) compare(v2 *SemVer) int {
+	// Return quickly if versions match
 	if v1.String() == v2.String() {
 		return 0
 	}
+
+	// Normal versions are favored over pre-releases.
+	if v1.BaseString() == v2.BaseString() {
+		if v1.PreRel == "" && v2.PreRel != "" {
+			return 1
+		}
+		if v1.PreRel != "" && v2.PreRel == "" {
+			return -1
+		}
+	}
+
 	partsA := v1.parts()
 	partsB := v2.parts()
 

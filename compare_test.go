@@ -90,18 +90,27 @@ func TestCompare_EqualTo(t *testing.T) {
 }
 
 func TestCompare_IgnoreBuildMetadata(t *testing.T) {
-	v1, err := NewFromString("1.2.3-4+5")
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	v2, err := NewFromString("1.2.3-4+6")
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
+	v1, _ := NewFromString("1.2.3-4+5")
+	v2, _ := NewFromString("1.2.3-4+6")
 
 	if !v1.Compare("=", v2) {
 		t.Fatalf("%s should be equal to %s", v1.String(), v2.String())
+	}
+}
+
+func TestCompare_FavorNormalOverPreRel(t *testing.T) {
+	v1, _ := NewFromString("1.2.3")
+	v2, _ := NewFromString("1.2.3-1")
+
+	if !v1.Compare(">", v2) {
+		t.Fatalf("%s should be > %s", v1.String(), v2.String())
+	}
+
+	v1, _ = NewFromString("1.2.3-1")
+	v2, _ = NewFromString("1.2.3")
+
+	if !v1.Compare("<", v2) {
+		t.Fatalf("%s should be < %s", v1.String(), v2.String())
 	}
 }
 
