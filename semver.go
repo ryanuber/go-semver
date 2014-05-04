@@ -123,7 +123,7 @@ func (s *SemVer) verify() error {
 
 	if s.PreRel != "" {
 		if !matchAny(preReList, s.PreRel) {
-			return fmt.Errorf("semver: invalid pre-release tag: %s", s.PreRel)
+			return fmt.Errorf("semver: invalid pre-release: %s", s.PreRel)
 		}
 	}
 
