@@ -94,7 +94,8 @@ func NewFromString(vstr string) (*SemVer, error) {
 }
 
 // matchAny simplifies iterating over a slice of regexp patterns and testing if
-// any of them match a subject text.
+// any of them match a subject text. matchAny automatically splits subj by "."
+// and then compares each component to the list of patterns.
 func matchAny(patterns []*regexp.Regexp, subj string) bool {
 	for _, subj := range strings.Split(subj, ".") {
 		for _, pattern := range patterns {

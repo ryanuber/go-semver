@@ -10,6 +10,8 @@ func (v1 *SemVer) compare(v2 *SemVer) int {
 	}
 	partsA := v1.parts()
 	partsB := v2.parts()
+
+	// Exclude build metadata during version comparison
 	return vcomp(partsA[:len(partsA)-1], partsB[:len(partsB)-1])
 }
 
