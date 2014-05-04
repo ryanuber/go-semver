@@ -20,7 +20,7 @@ func TestNew(t *testing.T) {
 
 func TestNewFromString(t *testing.T) {
 	// All components present
-	ver, err := NewFromString("1.2.3-4+5")
+	ver, err := NewFromString("1.2.3-4.0a+5.1b")
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
@@ -29,8 +29,8 @@ func TestNewFromString(t *testing.T) {
 		Major:  "1",
 		Minor:  "2",
 		Patch:  "3",
-		PreRel: "4",
-		Build:  "5",
+		PreRel: "4.0a",
+		Build:  "5.1b",
 	}
 
 	if !reflect.DeepEqual(ver, expected) {
@@ -38,7 +38,7 @@ func TestNewFromString(t *testing.T) {
 	}
 
 	// Build number present, pre-release absent
-	ver, err = NewFromString("1.2.3+4")
+	ver, err = NewFromString("1.2.3+4.0a")
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
@@ -48,7 +48,7 @@ func TestNewFromString(t *testing.T) {
 		Minor:  "2",
 		Patch:  "3",
 		PreRel: "",
-		Build:  "4",
+		Build:  "4.0a",
 	}
 
 	if !reflect.DeepEqual(ver, expected) {
@@ -56,7 +56,7 @@ func TestNewFromString(t *testing.T) {
 	}
 
 	// Pre-release present, build number absent
-	ver, err = NewFromString("1.2.3-4")
+	ver, err = NewFromString("1.2.3-4.0a")
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
@@ -65,7 +65,7 @@ func TestNewFromString(t *testing.T) {
 		Major:  "1",
 		Minor:  "2",
 		Patch:  "3",
-		PreRel: "4",
+		PreRel: "4.0a",
 		Build:  "",
 	}
 

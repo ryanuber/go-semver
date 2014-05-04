@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	baseRe    *regexp.Regexp
-	extReList []*regexp.Regexp
+	baseRe      *regexp.Regexp
+	preReList   []*regexp.Regexp
+	buildReList []*regexp.Regexp
 )
 
 // Version represents a SemVer 2.0.0 version and implements some high-level
@@ -22,9 +23,14 @@ type SemVer struct {
 }
 
 func init() {
-	baseRe = regexp.MustCompile("^(([1-9][0-9]+)|[0-9])?$")
-	extReList = []*regexp.Regexp{
-		regexp.MustCompile("^([1-9a-zA-Z]([0-9a-zA-Z-]+)?)?$"),
+	baseRe = regexp.MustCompile("^([1-9][0-9]+)|[0-9]$")
+	preReList = []*regexp.Regexp{
+		regexp.MustCompile("^[0-9]+[a-zA-Z-]+([0-9a-zA-Z-]+)?$"),
+		regexp.MustCompile("^[1-9a-zA-Z]([0-9a-zA-Z-]+)?$"),
+		baseRe,
+	}
+	buildReList = []*regexp.Regexp{
+		regexp.MustCompile("^[0-9a-zA-Z-]+$"),
 		baseRe,
 	}
 }
@@ -90,9 +96,11 @@ func NewFromString(vstr string) (*SemVer, error) {
 // matchAny simplifies iterating over a slice of regexp patterns and testing if
 // any of them match a subject text.
 func matchAny(patterns []*regexp.Regexp, subj string) bool {
-	for _, pattern := range patterns {
-		if pattern.MatchString(subj) {
-			return true
+	for _, subj := range strings.Split(subj, ".") {
+		for _, pattern := range patterns {
+			if pattern.MatchString(subj) {
+				return true
+			}
 		}
 	}
 	return false
@@ -113,14 +121,14 @@ func (s *SemVer) verify() error {
 		return fmt.Errorf("semver: invalid patch version: %s", s.Patch)
 	}
 
-	for _, subj := range strings.Split(s.PreRel, ".") {
-		if !matchAny(extReList, subj) {
+	if s.PreRel != "" {
+		if !matchAny(preReList, s.PreRel) {
 			return fmt.Errorf("semver: invalid pre-release tag: %s", s.PreRel)
 		}
 	}
 
-	for _, subj := range strings.Split(s.Build, ".") {
-		if !matchAny(extReList, subj) {
+	if s.Build != "" {
+		if !matchAny(buildReList, s.Build) {
 			return fmt.Errorf("semver: invalid build metadata: %s", s.Build)
 		}
 	}
