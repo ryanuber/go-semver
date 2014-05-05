@@ -7,9 +7,8 @@ import (
 )
 
 var (
-	baseRe      *regexp.Regexp
-	preReList   []*regexp.Regexp
-	buildReList []*regexp.Regexp
+	preRe   []*regexp.Regexp
+	buildRe []*regexp.Regexp
 )
 
 // Version represents a SemVer 2.0.0 version and implements some high-level
@@ -23,15 +22,12 @@ type SemVer struct {
 }
 
 func init() {
-	baseRe = regexp.MustCompile("^([1-9][0-9]+)|[0-9]$")
-	preReList = []*regexp.Regexp{
+	preRe = []*regexp.Regexp{
 		regexp.MustCompile("^[0-9]+[a-zA-Z-]+([0-9a-zA-Z-]+)?$"),
 		regexp.MustCompile("^[1-9a-zA-Z]([0-9a-zA-Z-]+)?$"),
-		baseRe,
 	}
-	buildReList = []*regexp.Regexp{
+	buildRe = []*regexp.Regexp{
 		regexp.MustCompile("^[0-9a-zA-Z-]+$"),
-		baseRe,
 	}
 }
 
@@ -115,25 +111,43 @@ func matchAny(patterns []*regexp.Regexp, subj string) bool {
 // verify is used to ensure that a semver object complies with the format
 // defined by semver.org.
 func (s *SemVer) verify() error {
-	if !baseRe.MatchString(s.Major) {
+	if !isNumeric(s.Major) {
 		return fmt.Errorf("semver: invalid major version: %s", s.Major)
 	}
 
-	if !baseRe.MatchString(s.Minor) {
+	if !isNumeric(s.Minor) {
 		return fmt.Errorf("semver: invalid minor version: %s", s.Minor)
 	}
 
-	if !baseRe.MatchString(s.Patch) {
+	if !isNumeric(s.Patch) {
 		return fmt.Errorf("semver: invalid patch version: %s", s.Patch)
 	}
 
-	if s.PreRel != "" && !matchAny(preReList, s.PreRel) {
+	if s.PreRel != "" && !isNumeric(s.PreRel) && !matchAny(preRe, s.PreRel) {
 		return fmt.Errorf("semver: invalid pre-release: %s", s.PreRel)
 	}
 
-	if s.Build != "" && !matchAny(buildReList, s.Build) {
+	if s.Build != "" && !isNumeric(s.Build) && !matchAny(buildRe, s.Build) {
 		return fmt.Errorf("semver: invalid build metadata: %s", s.Build)
 	}
 
 	return nil
+}
+
+// isNumeric is a utility function which can determine if a string should
+// be considered numeric. Semantic version numeric values MUST NOT contain
+// leading zeros.
+func isNumeric(s string) bool {
+	// No empty strings or leading zeros
+	if len(s) == 0 || (len(s) > 1 && string(s[0]) == "0") {
+		return false
+	}
+
+	for _, v := range s {
+		if v < '0' || v > '9' {
+			return false
+		}
+	}
+
+	return true
 }

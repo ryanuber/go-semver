@@ -163,3 +163,17 @@ func TestCompareString_InvalidComparison(t *testing.T) {
 		t.Fatalf("Expected invalid comparison error")
 	}
 }
+
+func TestCompare_StringNumericCompare(t *testing.T) {
+	v1, _ := NewFromString("1.0.9")
+	v2, _ := NewFromString("1.0.10")
+	v3, _ := NewFromString("1.0.11")
+
+	if !Compare(v1, "<", v2) {
+		t.Fatalf("%s should be < %s", v1.String(), v2.String())
+	}
+
+	if !Compare(v3, ">", v1) {
+		t.Fatalf("%s shoudl be > %s", v1.String(), v2.String())
+	}
+}

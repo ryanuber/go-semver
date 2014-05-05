@@ -170,3 +170,18 @@ func TestBadBuildMetadata(t *testing.T) {
 		t.Fatalf("Expected build metadata error")
 	}
 }
+
+func TestIsNumeric(t *testing.T) {
+	if !isNumeric("1") {
+		t.Fatalf("1 should be numeric")
+	}
+	if !isNumeric("73564") {
+		t.Fatalf("73564 should be numeric")
+	}
+	if isNumeric("01234") {
+		t.Fatalf("01234 should NOT be numeric")
+	}
+	if !isNumeric("0") {
+		t.Fatalf("0 should be numeric")
+	}
+}

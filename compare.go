@@ -82,11 +82,14 @@ func vcomp(v1, v2 []string) int {
 	switch {
 	case len(v1) == 0 && len(v2) == 0:
 		return 0
+	case isNumeric(v1[0]) && len(v1[0]) > len(v2[0]):
+		return 1
+	case isNumeric(v1[0]) && len(v1[0]) < len(v2[0]):
+		return -1
 	case v1[0] > v2[0]:
 		return 1
 	case v1[0] < v2[0]:
 		return -1
-	default:
-		return vcomp(v1[1:], v2[1:])
 	}
+	return vcomp(v1[1:], v2[1:])
 }
