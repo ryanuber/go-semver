@@ -159,6 +159,15 @@ func TestCompare_TwiddleEqual(t *testing.T) {
 	}
 }
 
+func TestCompare_TwiddlePatchFalse(t *testing.T) {
+	v1, _ := NewFromString("1.2.3")
+	v2, _ := NewFromString("1.2.4")
+
+	if v1.Compare("~>", v2) {
+		t.Fatalf("%s should NOT ~> %s", v1.String(), v2.String())
+	}
+}
+
 func TestCompare_TwiddleMinorFalse(t *testing.T) {
 	v1, _ := NewFromString("1.2.0")
 	v2, _ := NewFromString("1.3.0")

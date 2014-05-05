@@ -70,11 +70,12 @@ func (v1 *SemVer) twiddleCompare(v2 *SemVer) bool {
 
 	last := len(partsB)
 	for i := last - 1; i >= 0; i-- {
-		if partsB[i] == "" || partsB[i] == "0" {
+		switch partsB[i] {
+		case "":
 			last = i
-		}
-		if partsB[i] == "" {
 			continue
+		case "0":
+			last = i
 		}
 		break
 	}
