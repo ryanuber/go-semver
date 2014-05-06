@@ -79,17 +79,25 @@ func (v1 *SemVer) compare(v2 *SemVer) int {
 // components and return an integer representing which is greater. The result
 // is intended to be compared against integer 0 using standard operators.
 func vcomp(v1, v2 []string) int {
-	switch {
-	case len(v1) == 0 && len(v2) == 0:
+	if len(v1) == 0 && len(v2) == 0 {
 		return 0
-	case isNumeric(v1[0]) && len(v1[0]) > len(v2[0]):
+	}
+
+	verA, lenA, numeric := v1[0], len(v1[0]), isNumeric(v1[0])
+	verB, lenB := v2[0], len(v2[0])
+
+	switch {
+	case verA == verB:
+		return vcomp(v1[1:], v2[1:])
+	case numeric && lenA > lenB:
 		return 1
-	case isNumeric(v1[0]) && len(v1[0]) < len(v2[0]):
+	case numeric && lenA < lenB:
 		return -1
-	case v1[0] > v2[0]:
+	case verA > verB:
 		return 1
-	case v1[0] < v2[0]:
+	case verA < verB:
 		return -1
 	}
+
 	return vcomp(v1[1:], v2[1:])
 }
