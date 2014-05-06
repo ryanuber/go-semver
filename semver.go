@@ -139,7 +139,7 @@ func (s *SemVer) verify() error {
 // leading zeros.
 func isNumeric(s string) bool {
 	// No empty strings or leading zeros
-	if len(s) == 0 || (len(s) > 1 && string(s[0]) == "0") {
+	if len(s) == 0 || (len(s) > 1 && s[0] == 0x30) {
 		return false
 	}
 
