@@ -184,4 +184,7 @@ func TestIsNumeric(t *testing.T) {
 	if !isNumeric("0") {
 		t.Fatalf("0 should be numeric")
 	}
+	if isNumeric("12a") {
+		t.Fatalf("12a should NOT be numeric")
+	}
 }
