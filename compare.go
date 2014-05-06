@@ -87,8 +87,6 @@ func vcomp(v1, v2 []string) int {
 	verB, lenB := v2[0], len(v2[0])
 
 	switch {
-	case verA == verB:
-		return vcomp(v1[1:], v2[1:])
 	case numeric && lenA > lenB:
 		return 1
 	case numeric && lenA < lenB:
