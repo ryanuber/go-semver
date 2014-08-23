@@ -172,19 +172,16 @@ func TestBadBuildMetadata(t *testing.T) {
 }
 
 func TestIsNumeric(t *testing.T) {
-	if !isNumeric("1") {
-		t.Fatalf("1 should be numeric")
+	cases := map[string]bool{
+		"1":     true,
+		"73564": true,
+		"01234": false,
+		"0":     true,
+		"12a":   false,
 	}
-	if !isNumeric("73564") {
-		t.Fatalf("73564 should be numeric")
-	}
-	if isNumeric("01234") {
-		t.Fatalf("01234 should NOT be numeric")
-	}
-	if !isNumeric("0") {
-		t.Fatalf("0 should be numeric")
-	}
-	if isNumeric("12a") {
-		t.Fatalf("12a should NOT be numeric")
+	for in, expected := range cases {
+		if isNumeric(in) != expected {
+			t.Fatalf("bad: isNumeric(%s) should be %v", in, expected)
+		}
 	}
 }
