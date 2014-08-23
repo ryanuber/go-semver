@@ -11,7 +11,7 @@ var (
 	buildRe []*regexp.Regexp
 )
 
-// Version represents a SemVer 2.0.0 version and implements some high-level
+// SemVer represents a SemVer 2.0.0 version and implements some high-level
 // methods to manage multiple versions.
 type SemVer struct {
 	Major  string // Backward-incompatible changes
@@ -68,7 +68,7 @@ func New(major, minor, patch, preRel, build string) (*SemVer, error) {
 	return s, nil
 }
 
-// New will create a new semantic versioning object from a flat
+// NewFromString will create a new semantic versioning object from a flat
 // string and populate all struct fields.
 func NewFromString(vstr string) (*SemVer, error) {
 	var major, minor, patch, pre, build string
